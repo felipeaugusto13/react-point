@@ -1,0 +1,12 @@
+{
+  "name": "react-point",
+  "displayName": "react-point",
+  "expo": {
+    "name": "react-point",
+    "slug": "react-point",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
