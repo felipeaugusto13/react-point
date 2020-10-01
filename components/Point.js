@@ -3,8 +3,11 @@ import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
 export default function Point(){
     const [date, setDate] = useState(null);
-    const [hour ,setHour] = useState(null);
-    const [minute, setMinute] = useState(null);
+    const [firstPoint ,setFirstPoint] = useState(null);
+    const [textFirst, setTextFirst] = useState(null);
+    const [secondPoint, setSecondPoint] = useState(null);
+    const [thirdPoint, setThirdPoint] = useState(null);
+    const [fourthPoint, setFourthPoint] = useState(null);
     const [textHour, setTextHour] = useState(null);
 
     useEffect(() => {
@@ -15,46 +18,33 @@ export default function Point(){
         var minute = null;
         var seconds = null;
 
-        {new Date().getDate() < 10 ? 
-        day = "0" + (new Date().getDay().toString())
-        :
-        day = new Date().getDay().toString()
-        }
-        {new Date().getMonth() < 10 ?
-        month = "0" + (new Date().getMonth().toString())
-        :
-        month = new Date().getMonth().toString()        
-        }
-
         const timer = setInterval(()=>{
-            {new Date().getHours() < 10 ?
-            hour = "0"+ (new Date().getHours().toString())
-            
-            :
-            hour = new Date().getHours().toString()
-            }
-            {new Date().getMinutes() < 10 ?
-            minute = "0"+ (new Date().getMinutes().toString())
-            
-            :
-            minute = new Date().getMinutes().toString()
-            }
-            {new Date().getSeconds() < 10 ?
-            seconds = "0"+ (new Date().getSeconds().toString())
-            :
-            seconds = new Date().getSeconds().toString()
-            }
-    
-            setTextHour(hour+":"+minute+":"+seconds)
+            setTextHour(new Date().toLocaleTimeString())
         },100)
         
         
-        setDate(day+"/"+month+"/"+year)
+        setDate(new Date().toDateString())
 
         return function cleanup(){
             clearInterval(timer);
         }
-    },)
+    })
+
+    function setPoint(){
+        if(firstPoint === null){
+            setFirstPoint(new Date().getTime())
+        }
+        else if(secondPoint === null){
+            setSecondPoint(new Date().getTime())
+        }
+        else if(thirdPoint === null){
+            setThirdPoint(new Date().getTime())
+        }
+        else if(fourthPoint === null){
+            setFourthPoint(new Date().getTime())
+        }
+    }
+
     return(
         <View style={styles.container}>
             <View style={styles.dateContainer}>
@@ -77,16 +67,20 @@ export default function Point(){
                 </View>
                 <View style={styles.containerHours}>
                     <View style={styles.labels}>
-                        <Text>Entrada</Text>
+                        {firstPoint !== null ?
+                        <Text>{new Date(firstPoint).toLocaleTimeString()}</Text> : <Text>Vazio</Text> }
                     </View>
                     <View style={styles.labels}>
-                        <Text>Saida do almoço</Text>
+                        {secondPoint !== null ? 
+                        <Text>{new Date(secondPoint).toLocaleTimeString()}</Text> : <Text>Vazio</Text> }
                     </View>
                     <View style={styles.labels}>
-                        <Text>Volta do almoço</Text>
+                        {thirdPoint !== null ?
+                        <Text>{new Date(thirdPoint).toLocaleTimeString()}</Text> : <Text>Vazio</Text> }
                     </View>
                     <View style={styles.labels}>
-                        <Text>Saida</Text>
+                        {fourthPoint !== null ?
+                        <Text>{new Date(fourthPoint).toLocaleTimeString()}</Text> : <Text>Vazio</Text> }
                     </View>
                 </View>
             </View>
@@ -94,7 +88,8 @@ export default function Point(){
                 <Text style={styles.hourFont}>{textHour}</Text>
             </View>
             <View style={styles.containerButton}>
-                <TouchableOpacity style={styles.pointButton}>
+                <TouchableOpacity style={styles.pointButton}
+                onPress={()=>{ setPoint()}}>
                     <Text style={styles.fontButton}>Bater ponto</Text>
                 </TouchableOpacity>
             </View>
