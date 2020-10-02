@@ -15,6 +15,9 @@ export default function Point(){
     const [symbol, setSymbol] = useState("-");
     const [isEnd, setIsEnd] = useState(false)
 
+    const day = ["Seg", "Ter", "Qua", "Qui","Sex","Sab", "Dom"];
+    const month = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Sep", "Out", "Nov", "Dez"]
+
     useEffect(() => {
 
         const timer = setInterval(()=>{
@@ -42,7 +45,7 @@ export default function Point(){
         },1000)
         
         
-        setDate(new Date().toDateString())
+        setDate(day[new Date().getDay()-1]+' '+(new Date().getDate())+" "+month[new Date().getMonth()]+" "+(new Date().getFullYear().toString()))
 
         return function cleanup(){
             clearInterval(timer);
