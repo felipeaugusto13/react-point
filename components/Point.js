@@ -1,47 +1,94 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 
 export default function Point(){
     const [date, setDate] = useState(null);
     const [firstPoint ,setFirstPoint] = useState(null);
-    const [textFirst, setTextFirst] = useState(null);
     const [secondPoint, setSecondPoint] = useState(null);
     const [thirdPoint, setThirdPoint] = useState(null);
     const [fourthPoint, setFourthPoint] = useState(null);
     const [textHour, setTextHour] = useState(null);
+    const [jorney , setJorney] = useState(null);
+    const [remainingTime, setRemainingTime] = useState(null);
+    const [isOdd, setIsOdd] = useState(false);
+    const [color, setColor] = useState("#f00");
+    const [symbol, setSymbol] = useState("-");
+    const [isEnd, setIsEnd] = useState(false)
 
     useEffect(() => {
-        var day = null;
-        var month = null;
-        var year = new Date().getFullYear().toString();
-        var hour = null;
-        var minute = null;
-        var seconds = null;
 
         const timer = setInterval(()=>{
             setTextHour(new Date().toLocaleTimeString())
-        },100)
+        },1000)
+
+        const timerDecrease = setInterval(() => {
+            if(isOdd === true && remainingTime !== null){
+                if(remainingTime <= (new Date().getTimezoneOffset()*60*1000 + 1000)){
+                    console.log("entrei")
+                    console.log(remainingTime)
+                    setIsEnd(true)
+                }
+                if(isEnd === false){
+                    setRemainingTime(remainingTime - 1000)
+                    setRemaingTimeColor()
+                    setRemaingSymbol()
+                }
+                else if(isEnd === true){
+                    setRemainingTime(remainingTime + 1000)
+                    setRemaingTimeColor()
+                    setRemaingSymbol()
+                }
+            }
+        },1000)
         
         
         setDate(new Date().toDateString())
 
         return function cleanup(){
             clearInterval(timer);
+            clearInterval(timerDecrease)
         }
     })
+
+    function setRemaingTimeColor(){
+        if(isEnd === false){
+            setColor("#f00")
+        }
+        else{
+            setColor("#0f0")
+        }
+    }
+
+    function setRemaingSymbol(){
+        if(isEnd === false){
+            setSymbol("-")
+        }
+        else{
+            setSymbol("+")
+        }
+    }
 
     function setPoint(){
         if(firstPoint === null){
             setFirstPoint(new Date().getTime())
+            setJorney(new Date().getTime() + 8*60*60*1000 + 13*60*1000)
+            console.log(new Date().getTimezoneOffset())
+            // setRemainingTime(new Date().setTime((0 + (new Date().getTimezoneOffset() / 60))*60*60*1000 + 1*60*1000))
+            setRemainingTime(new Date().setTime(new Date().getTimezoneOffset()*60*1000 + 0*60*60*1000 + 1*60*1000))
+            
+            setIsOdd(true)
         }
         else if(secondPoint === null){
             setSecondPoint(new Date().getTime())
+            setIsOdd(false)
         }
         else if(thirdPoint === null){
             setThirdPoint(new Date().getTime())
+            setIsOdd(true)
         }
         else if(fourthPoint === null){
             setFourthPoint(new Date().getTime())
+            setIsOdd(false)
         }
     }
 
@@ -68,19 +115,19 @@ export default function Point(){
                 <View style={styles.containerHours}>
                     <View style={styles.labels}>
                         {firstPoint !== null ?
-                        <Text>{new Date(firstPoint).toLocaleTimeString()}</Text> : <Text>Vazio</Text> }
+                        <Text>{new Date(firstPoint).toLocaleTimeString()}</Text> : <Text>-</Text> }
                     </View>
                     <View style={styles.labels}>
                         {secondPoint !== null ? 
-                        <Text>{new Date(secondPoint).toLocaleTimeString()}</Text> : <Text>Vazio</Text> }
+                        <Text>{new Date(secondPoint).toLocaleTimeString()}</Text> : <Text>-</Text> }
                     </View>
                     <View style={styles.labels}>
                         {thirdPoint !== null ?
-                        <Text>{new Date(thirdPoint).toLocaleTimeString()}</Text> : <Text>Vazio</Text> }
+                        <Text>{new Date(thirdPoint).toLocaleTimeString()}</Text> : <Text>-</Text> }
                     </View>
                     <View style={styles.labels}>
                         {fourthPoint !== null ?
-                        <Text>{new Date(fourthPoint).toLocaleTimeString()}</Text> : <Text>Vazio</Text> }
+                        <Text>{new Date(fourthPoint).toLocaleTimeString()}</Text> : <Text>-</Text> }
                     </View>
                 </View>
             </View>
@@ -91,6 +138,29 @@ export default function Point(){
                 <TouchableOpacity style={styles.pointButton}
                 onPress={()=>{ setPoint()}}>
                     <Text style={styles.fontButton}>Bater ponto</Text>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.containerFinish}>
+                {jorney !== null ?
+                <View>
+                    <View style={styles.containerRemainer}>
+                            <Text style={styles.fontRemainer}>Fim da jornada: {new Date(jorney).toLocaleTimeString()}</Text>
+                    </View>
+                    <View style={styles.containerRemainer2}>
+                            <Text style={styles.fontRemainer}>Falta: </Text>
+                            <Text style={{color:color, marginHorizontal:3, fontWeight:"bold", fontSize:15}}> {symbol} {new Date(remainingTime).toLocaleTimeString()}</Text>
+                    </View>
+                </View>
+                :
+                <View style={styles.containerFinish}/>
+                }
+                <TouchableOpacity style={styles.pointFinish}
+                onPress={() => {
+                    if(isOdd){
+                        Alert.alert("Não pode haver batidas impar")
+                    }
+                }}>
+                    <Text style={styles.fontFinish}>Finalizar Dia</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -139,7 +209,7 @@ const styles = StyleSheet.create({
         justifyContent:"center",
         alignItems:"center",
         marginVertical:20,
-        height:200
+        height:100
     },
     pointButton:{
         backgroundColor:"#008394",
@@ -156,12 +226,46 @@ const styles = StyleSheet.create({
     },
     hourContainer: {
         width:"100%",
-        height:200,
-        justifyContent:"center",
+        height:150,
+        justifyContent:"flex-end",
         alignItems:"center"
     },
     hourFont:{
         fontSize:60,
         fontWeight:"bold"
+    },
+    containerFinish: {
+        width:"100%",
+        justifyContent:"flex-end",
+        alignItems:"center",
+        height:200
+    },
+    pointFinish: {
+        backgroundColor:"#b71c1c",
+        borderRadius:7,
+        width:"50%",
+        height:50,
+        alignItems:"center",
+        justifyContent:"center"
+    },
+    fontFinish: {
+        fontSize:15,
+        fontWeight:"bold",
+        color:"#fff"
+    },
+    containerRemainer:{
+        marginVertical:5,
+        alignItems:"center",
+        justifyContent:"center"
+    },
+    containerRemainer2:{
+        flexDirection:'row',
+        marginVertical:20,
+        alignItems:"center",
+        justifyContent:"center"
+    },
+    fontRemainer: {
+        fontSize:15,
+        fontWeight:"bold",
     }
 })
