@@ -27,8 +27,6 @@ export default function Point(){
         const timerDecrease = setInterval(() => {
             if(isOdd === true && remainingTime !== null){
                 if(remainingTime <= (new Date().getTimezoneOffset()*60*1000 + 1000)){
-                    console.log("entrei")
-                    console.log(remainingTime)
                     setIsEnd(true)
                 }
                 if(isEnd === false){
